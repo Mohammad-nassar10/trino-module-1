@@ -11,10 +11,7 @@ spec:
   chart:
     name: ghcr.io/fybrik/trino-module-chart:0.0.0
     values:
-      imageChart.tag: main
-      trino.host: "trino-client.fybrik-notebook-sample.svc.cluster.local"
-      trino.port: "9047"
-      trino.enabled: "false"
+      imageChart.tag: 0.1.0
   capabilities:
     - capability: read
       scope: workload
