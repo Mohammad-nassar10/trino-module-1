@@ -61,7 +61,7 @@ Check the tables that `user1` can see. It should be only the `view1`.
 show tables from iceberg.icebergtrino;
 ```
 
-You can run a query to select from the created view. I should return only allowed columns according to the policies.
+You can run a query to select from the created view. It should return only allowed columns according to the policies.
 ```bash
 select * from iceberg.icebergtrino.view1;
 ```
