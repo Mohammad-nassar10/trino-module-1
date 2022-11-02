@@ -4,7 +4,11 @@ services:
     image: 'trinodb/trino:latest'
     hostname: trino-coordinator
     ports:
-      - '8080:8080'
+      - "8080:8080"
+      - "8443:8443"
+    expose:
+      - "8080"
+      - "8443"
     volumes:
       - ./etc:/etc/trino
     networks:
@@ -52,6 +56,22 @@ services:
     command: server --console-address ":9001" /data
     networks:
       - trino-network
+
+  # trino-proxy:
+  #     image: "envoyproxy/envoy-dev:latest"
+  #     # command: /usr/local/bin/envoy -c /etc/trino-envoy.yaml --service-cluster trino_coordinator -l debug
+  #     container_name: "trino-proxy"
+  #     # volumes:
+  #     #   - ./envoy/trino-envoy.yaml:/etc/trino-envoy.yaml
+  #     #   - ./certs/:/opt/certs
+  #     networks:
+  #       - trino-network
+  #     expose:
+  #       - "8453"
+  #       - "8001"
+  #     ports:
+  #       - "8453:8453"
+  #       - "8001:8001"
 
 volumes:
   minio-data:

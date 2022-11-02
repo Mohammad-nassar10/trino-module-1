@@ -3,30 +3,31 @@ import base64
 import json
 import trino
 import yaml
+from module.trino_op import connect_user, execute_query
 
 data_dict = {}
 
 
-def execute_query(cur, query):
-    cur.execute(query)
-    # res = None
-    try:
-        res = cur.fetchall()
-        return res
-    except Exception as e:
-        print(e)
-    # return res
+# def execute_query(cur, query):
+#     cur.execute(query)
+#     # res = None
+#     try:
+#         res = cur.fetchall()
+#         return res
+#     except Exception as e:
+#         print(e)
+#     # return res
 
-def connect_user(username, catalog):
-    conn = trino.dbapi.connect(host='host.docker.internal', port=8080, user=username, catalog=catalog)
-    # conn = trino.dbapi.connect(host='localhost', port=8080, user=username, catalog=catalog)
-    cur = conn.cursor()
-    return cur
+# def connect_user(username, catalog):
+#     conn = trino.dbapi.connect(host='host.docker.internal', port=8080, user=username, catalog=catalog)
+#     # conn = trino.dbapi.connect(host='localhost', port=8080, user=username, catalog=catalog)
+#     cur = conn.cursor()
+#     return cur
 
 def get_details_from_conf():
     """ Parse the configuration and get the data details and policies """
-    with open("/etc/conf/conf.yaml", 'r') as stream:
-    # with open("sample-conf.yaml", 'r') as stream:
+    # with open("/etc/conf/conf.yaml", 'r') as stream:
+    with open("sample-conf.yaml", 'r') as stream:
         content = yaml.safe_load(stream)
         for key, val in content.items():
             if "data" in key:
@@ -54,9 +55,10 @@ def get_policy_query(transformation_cols, sql_path, col_names):
     sql_vds = "select " + requested_cols_string + " from " + sql_path
     return sql_vds
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+def run_module():
     print("show catalogs")
-    cur = connect_user("admin", "iceberg")
+    cur = connect_user("admin", "iceberg", "localhost", 8080)
     res = execute_query(cur, "SHOW CATALOGS")
     print(res)
 
@@ -127,3 +129,28 @@ if __name__ == "__main__":
 
 
     
+import argparse
+from module.server import ReadServer
+
+
+
+def init_ReadServer(args):
+    ReadServer(args.config, args.port, args.loglevel.upper())
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Read Server')
+    parser.add_argument(
+        '-p', '--port', type=int, default=8484, help='Listening port for HTTP Server')
+    parser.add_argument(
+        '-c', '--config', type=str, default='/etc/conf/conf.yaml', help='Path to config file')
+    parser.add_argument(
+        '-l', '--loglevel', type=str, default='warning', help='logging level', 
+        choices=['trace', 'info', 'debug', 'warning', 'error', 'critical'])
+    args = parser.parse_args()
+
+
+    # Create views and access rules
+    run_module()
+
+    # Start the HTTP server
+    server = init_ReadServer(args)

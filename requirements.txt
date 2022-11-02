@@ -1,5 +1,5 @@
 ###### Requirements without version specifiers ######
 trino
-
+sql-metadata
 ###### Requirements with version specifiers ######
 
